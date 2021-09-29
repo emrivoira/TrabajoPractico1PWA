@@ -1,0 +1,22 @@
+version: '2'
+services:
+  BBDD:
+    image:
+      mysql:5.7.27
+    ports:
+      - "4000:3306"
+    environment:
+      MYSQL_DATABASE: pwa2019
+      MYSQL_USER: pwauser
+      MYSQL_PASSWORD: pwa123
+      MYSQL_ROOT_PASSWORD: pwa123
+    volumes:
+      - ./mysqldata:/var/lib/mysql
+  APPServer:
+      image:
+        yiisoftware/yii2-php:7.1-apache
+      volumes:
+        - ./src/composer/cache:/root/.composer/cache:delegated
+        - ./src/basic:/app:delegated
+      ports:
+        - "8000:80"
