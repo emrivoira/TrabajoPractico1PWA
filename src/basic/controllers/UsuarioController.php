@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use Yii;
 use app\models\Usuario;
 use app\models\UsuarioSearch;
 use yii\web\Controller;
@@ -48,14 +49,14 @@ class UsuarioController extends Controller
 
     /**
      * Displays a single Usuario model.
-     * @param int $ID ID
+     * @param int $id ID
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($ID)
+    public function actionView($id)
     {
         return $this->render('view', [
-            'model' => $this->findModel($ID),
+            'model' => $this->findModel($id),
         ]);
     }
 
@@ -69,8 +70,22 @@ class UsuarioController extends Controller
         $model = new Usuario();
 
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'ID' => $model->ID]);
+            if ($model->load(Yii::$app->request->post())) {
+                if ($model->validate()) {
+                    $model->username = $_POST['Usuario']['username'];
+                    $model->nombre = $_POST['Usuario']['nombre'];
+                    $model->nombre = $_POST['Usuario']['apellido'];
+                    $model->password = password_hash($_POST['Usuario']['password'], PASSWORD_BCRYPT);
+                    $model->authkey = md5(random_bytes(5));
+                    $model->accesstoken = password_hash(random_bytes(5), PASSWORD_DEFAULT);
+                    if ($model->save()) {
+                        return $this->redirect(['view', 'id' => $model->id]);
+                    } else {
+                        $model->getErrors();
+                    }
+                } else {
+                    $model->getErrors();
+                }
             }
         } else {
             $model->loadDefaultValues();
@@ -84,16 +99,16 @@ class UsuarioController extends Controller
     /**
      * Updates an existing Usuario model.
      * If update is successful, the browser will be redirected to the 'view' page.
-     * @param int $ID ID
+     * @param int $id ID
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($ID)
+    public function actionUpdate($id)
     {
-        $model = $this->findModel($ID);
+        $model = $this->findModel($id);
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'ID' => $model->ID]);
+            return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('update', [
@@ -104,13 +119,13 @@ class UsuarioController extends Controller
     /**
      * Deletes an existing Usuario model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param int $ID ID
+     * @param int $id ID
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($ID)
+    public function actionDelete($id)
     {
-        $this->findModel($ID)->delete();
+        $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
     }
@@ -118,11 +133,11 @@ class UsuarioController extends Controller
     /**
      * Finds the Usuario model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param int $ID ID
+     * @param int $id ID
      * @return Usuario the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($ID)
+    protected function findModel($id)
     {
         if (($model = Usuario::findOne($id)) !== null) {
             return $model;

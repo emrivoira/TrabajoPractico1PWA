@@ -7,7 +7,7 @@ use Yii;
 /**
  * This is the model class for table "usuario".
  *
- * @property int $ID
+ * @property int $id
  * @property string $username
  * @property string $nombre
  * @property string $apellido
@@ -31,7 +31,7 @@ class Usuario extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['username', 'nombre', 'apellido', 'password', 'accesstoken', 'authkey'], 'required'],
+            [['username', 'nombre', 'apellido', 'password'], 'required'],
             [['username'], 'string', 'max' => 50],
             [['nombre', 'apellido'], 'string', 'max' => 100],
             [['password', 'accesstoken', 'authkey'], 'string', 'max' => 255],
@@ -44,7 +44,7 @@ class Usuario extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'ID' => 'ID',
+            'id' => 'ID',
             'username' => 'Username',
             'nombre' => 'Nombre',
             'apellido' => 'Apellido',
