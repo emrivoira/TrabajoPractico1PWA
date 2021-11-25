@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 
+
 /**
  * This is the model class for table "usuario".
  *
@@ -15,7 +16,7 @@ use Yii;
  * @property string $accesstoken
  * @property string $authkey
  */
-class Usuario extends \yii\db\ActiveRecord
+class Usuario extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
 {
     /**
      * {@inheritdoc}
@@ -52,5 +53,38 @@ class Usuario extends \yii\db\ActiveRecord
             'accesstoken' => 'Accesstoken',
             'authkey' => 'Authkey',
         ];
+    }
+
+    public static function findIdentity($id)
+    {
+        return self::findOne($id);
+    }
+
+    public static function findIdentityByAccessToken($token, $type = null)
+    {
+        return self::findOne(['accesstoken'=>$token]);
+    } 
+
+    public static function findByUsername($username){
+        return self::findOne(['username'=>$username]);
+    }
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function getAuthKey()
+    {
+        return $this->authkey;
+    }
+
+    public function validateAuthKey($authKey)
+    {
+        return $this->authkey === $authKey;
+    }
+
+    public function validatePassword($password){
+        return password_verify($password, $this->password);
     }
 }
